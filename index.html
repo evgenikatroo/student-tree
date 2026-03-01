@@ -512,6 +512,9 @@
       clearTree();
 
       const meta = updateStages(s);
+      // 🌳 Dynamic trunk growth
+const trunkThickness = 12 + Math.min(20, Math.floor(s.apply.length / 25));
+document.getElementById("trunk").setAttribute("stroke-width", trunkThickness);
 
       // Roots appear when question exists
       if (s.question){
@@ -532,7 +535,12 @@
         addLabel(s.framework, 680, 240, 18, 0.92);
 
         // Leaves grow with apply length + watch notes
-        const leafCount = Math.min(18, Math.max(3, Math.floor(s.apply.length/40) + Math.floor(s.watch.length/60)));
+        const depthScore =
+    (s.apply.length / 30) +
+    (s.watch.length / 50) +
+    (s.revise.length / 40);
+
+const leafCount = Math.min(30, Math.max(3, Math.floor(depthScore)));
         for (let i=0;i<leafCount;i++){
           const x = 610 + i*18 + (i%3)*6;
           const y = 305 - i*6 + (i%4)*10;
@@ -545,7 +553,8 @@
       // Counter branch
       if (s.counter || s.counterText){
         const left = "M500 355 C 420 315, 330 270, 210 225";
-        addPath(branchesG, left, "rgba(255,210,124,.70)", 9);
+        const counterStrength = 6 + Math.min(8, Math.floor(s.counterText.length / 50));
+addPath(branchesG, left, "rgba(255,210,124,.85)", counterStrength);
         addLabel(s.counter ? s.counter : "Counter", 190, 250, 16, 0.9);
 
         const leafCount2 = Math.min(12, Math.max(2, Math.floor(s.counterText.length/55)));
@@ -557,7 +566,7 @@
       }
 
       // Crown glow when revise exists
-      if (s.revise){
+     if (s.revise && s.revise.length > 120){
         for (let i=0;i<10;i++){
           addLeaf(500 + (Math.sin(i)*55), 170 + (Math.cos(i)*35), 9);
         }
@@ -649,3 +658,4 @@ ${s.revise || "(none)"}\n`;
   </script>
 </body>
 </html>
+
