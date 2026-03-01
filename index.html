@@ -1,102 +1,651 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>My PWA</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Applied Ethics Lab — Tree</title>
 
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#111827" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#0b1220" />
 
-    <!-- iOS niceties (iPhone install via “Add to Home Screen”) -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    :root{
+      --bg1:#0b1220;
+      --bg2:#0f1a33;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.12);
+      --line: rgba(255,255,255,.14);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --accent:#7CFFB2;
+      --accent2:#8AB4FF;
+      --warn:#ffd27c;
+      --danger:#ff7c7c;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; color:var(--text); font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background: radial-gradient(1200px 800px at 20% 10%, #1a2f66 0%, transparent 60%),
+                  radial-gradient(1000px 700px at 90% 20%, #1f5a48 0%, transparent 55%),
+                  linear-gradient(160deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+    }
+    header{
+      position: sticky; top:0; z-index: 10;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(11,18,32,.86), rgba(11,18,32,.55));
+      border-bottom: 1px solid var(--line);
+      padding: 14px 16px;
+    }
+    header .top{
+      max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+    }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background: radial-gradient(circle at 30% 25%, var(--accent) 0%, transparent 45%),
+                  radial-gradient(circle at 70% 30%, var(--accent2) 0%, transparent 45%),
+                  rgba(255,255,255,.10);
+      border:1px solid var(--line);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    h1{font-size:16px; margin:0}
+    .sub{font-size:12px; color:var(--muted); margin:2px 0 0}
+    .chip{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line); background: rgba(255,255,255,.06);
+      color: var(--muted);
+    }
+    main{
+      max-width:1100px; margin:0 auto; padding: 16px;
+      display:grid; grid-template-columns: 1fr; gap:14px;
+    }
+    @media (min-width: 980px){
+      main{grid-template-columns: 1.15fr .85fr;}
+    }
+    .card{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.06));
+      border:1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.28);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding: 14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .card .hd h2{margin:0; font-size:14px}
+    .card .hd p{margin:4px 0 0; font-size:12px; color:var(--muted)}
+    .card .bd{padding:14px}
+    .grid{
+      display:grid; gap:10px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 680px){
+      .grid.two{grid-template-columns: 1fr 1fr;}
+    }
+    label{font-size:12px; color:var(--muted); display:block; margin: 0 0 6px}
+    input, textarea, select{
+      width:100%;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      color: var(--text);
+      outline:none;
+    }
+    textarea{min-height:88px; resize:vertical}
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    button{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 650;
+    }
+    button.primary{
+      border-color: rgba(124,255,178,.55);
+      background: linear-gradient(180deg, rgba(124,255,178,.20), rgba(124,255,178,.08));
+    }
+    button.danger{
+      border-color: rgba(255,124,124,.55);
+      background: linear-gradient(180deg, rgba(255,124,124,.18), rgba(255,124,124,.06));
+    }
+    button.ghost{background: transparent;}
+    .hint{font-size:12px; color:var(--muted); margin-top:8px}
+    .divider{height:1px; background: var(--line); margin: 12px 0}
+    .small{font-size:12px; color:var(--muted)}
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 6px 10px; border-radius:999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      font-size:12px; color: var(--muted);
+    }
 
-    <style>
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 24px; background: #f6f7fb; }
-      .card { max-width: 720px; margin: 0 auto; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
-      button { padding: 10px 14px; border-radius: 10px; border: 0; cursor: pointer; }
-      .primary { background: #111827; color: white; }
-      .muted { color: #6b7280; }
-      .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-      input { padding: 10px 12px; border-radius: 10px; border: 1px solid #e5e7eb; min-width: 220px; }
-      ul { padding-left: 18px; }
-    </style>
-  </head>
+    /* Tree canvas area */
+    .treeWrap{
+      padding: 14px;
+    }
+    .treeStage{
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-bottom:10px;
+    }
+    .stageDot{
+      width:10px; height:10px; border-radius: 99px;
+      background: rgba(255,255,255,.20); border:1px solid var(--line);
+    }
+    .stageDot.on{background: var(--accent); border-color: rgba(124,255,178,.6)}
+    .canvasBox{
+      background: radial-gradient(600px 320px at 30% 20%, rgba(138,180,255,.15), transparent 60%),
+                  radial-gradient(520px 300px at 70% 30%, rgba(124,255,178,.12), transparent 60%),
+                  rgba(0,0,0,.18);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow:hidden;
+      position: relative;
+      aspect-ratio: 16/10;
+      min-height: 340px;
+    }
+    svg{width:100%; height:100%; display:block}
+    .legend{
+      position:absolute; right:10px; bottom:10px;
+      display:flex; flex-direction:column; gap:6px;
+      background: rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      border-radius: 14px;
+      padding:10px;
+      max-width: 260px;
+    }
+    .legend b{font-size:12px}
+    .legend span{font-size:12px; color:var(--muted)}
+    .toast{
+      position: fixed; left:50%; transform: translateX(-50%);
+      bottom: 16px;
+      background: rgba(0,0,0,.55);
+      border:1px solid var(--line);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      display:none;
+    }
+  </style>
+</head>
 
-  <body>
-    <div class="card">
-      <h1>My Installable Web App ✅</h1>
-      <p class="muted">
-        This is a PWA: it can install to your home screen and work offline after first load.
-      </p>
+<body>
+  <header>
+    <div class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Applied Ethics Lab — Tree</h1>
+          <div class="sub">Pick → Choose → Watch/Read → Apply → Counter → Revise (visualized as a growing tree)</div>
+        </div>
+      </div>
+      <div class="chip" id="statusChip">Saving locally</div>
+    </div>
+  </header>
 
-      <div class="row">
-        <input id="itemInput" placeholder="Add a note..." />
-        <button class="primary" id="addBtn">Add</button>
-        <button id="clearBtn">Clear</button>
+  <main>
+    <!-- Left: Tree visualization -->
+    <section class="card">
+      <div class="hd">
+        <div>
+          <h2>Your Ethics Tree</h2>
+          <p>As you fill fields, the tree grows: roots (question), branches (frameworks), leaves (reasoning), balance (revision).</p>
+        </div>
+        <span class="pill" id="scorePill">Growth: 0%</span>
       </div>
 
-      <h3>Notes</h3>
-      <ul id="list"></ul>
+      <div class="treeWrap">
+        <div class="treeStage" id="stageRow" aria-label="Stages">
+          <span class="pill"><span class="stageDot" id="dot1"></span> Pick</span>
+          <span class="pill"><span class="stageDot" id="dot2"></span> Choose</span>
+          <span class="pill"><span class="stageDot" id="dot3"></span> Watch/Read</span>
+          <span class="pill"><span class="stageDot" id="dot4"></span> Apply</span>
+          <span class="pill"><span class="stageDot" id="dot5"></span> Counter</span>
+          <span class="pill"><span class="stageDot" id="dot6"></span> Revise</span>
+        </div>
 
-      <p class="muted" id="status"></p>
-    </div>
+        <div class="canvasBox">
+          <svg viewBox="0 0 1000 620" role="img" aria-label="Ethics tree visualization">
+            <defs>
+              <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
 
-    <script>
-      // Basic local storage demo
-      const input = document.getElementById("itemInput");
-      const list = document.getElementById("list");
-      const status = document.getElementById("status");
+              <linearGradient id="trunkGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="rgba(255,255,255,.88)"/>
+                <stop offset="100%" stop-color="rgba(255,255,255,.42)"/>
+              </linearGradient>
 
-      function load() {
-        const items = JSON.parse(localStorage.getItem("items") || "[]");
-        list.innerHTML = "";
-        items.forEach((t, i) => {
-          const li = document.createElement("li");
-          li.textContent = t;
-          li.style.cursor = "pointer";
-          li.title = "Click to delete";
-          li.onclick = () => {
-            items.splice(i, 1);
-            localStorage.setItem("items", JSON.stringify(items));
-            load();
-          };
-          list.appendChild(li);
-        });
-      }
+              <linearGradient id="leafGrad" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#7CFFB2"/>
+                <stop offset="100%" stop-color="#8AB4FF"/>
+              </linearGradient>
+            </defs>
 
-      document.getElementById("addBtn").onclick = () => {
-        const text = input.value.trim();
-        if (!text) return;
-        const items = JSON.parse(localStorage.getItem("items") || "[]");
-        items.push(text);
-        localStorage.setItem("items", JSON.stringify(items));
-        input.value = "";
-        load();
+            <!-- ground -->
+            <path d="M50 540 C 220 520, 360 560, 520 545 C 700 528, 800 505, 950 540"
+                  fill="none" stroke="rgba(255,255,255,.16)" stroke-width="3"/>
+
+            <!-- roots -->
+            <g id="roots" stroke="rgba(124,255,178,.55)" stroke-width="3" fill="none" filter="url(#softGlow)"></g>
+
+            <!-- trunk -->
+            <path id="trunk"
+              d="M500 535 C 495 500, 498 470, 500 440 C 505 400, 500 360, 500 320"
+              fill="none" stroke="url(#trunkGrad)" stroke-width="18" stroke-linecap="round"
+              filter="url(#softGlow)"/>
+
+            <!-- branches -->
+            <g id="branches" stroke="rgba(138,180,255,.70)" stroke-width="8" fill="none" stroke-linecap="round" filter="url(#softGlow)"></g>
+
+            <!-- leaves -->
+            <g id="leaves" fill="url(#leafGrad)" opacity="0.95" filter="url(#softGlow)"></g>
+
+            <!-- labels -->
+            <g id="labels" fill="rgba(255,255,255,.88)" font-size="16" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif"></g>
+          </svg>
+
+          <div class="legend">
+            <b id="legendTitle">Lab prompt</b>
+            <span id="legendText">Start by entering a moral question (roots) and picking a framework (branch).</span>
+          </div>
+        </div>
+
+        <div class="hint">Tip: keep it short. This is applied ethics: clear case, clear framework, clear reasoning.</div>
+      </div>
+    </section>
+
+    <!-- Right: Lab inputs -->
+    <section class="card">
+      <div class="hd">
+        <div>
+          <h2>Build your Lab Report</h2>
+          <p>Complete the fields. Your tree updates automatically. Everything saves on this device.</p>
+        </div>
+        <button class="ghost" id="newBtn" title="Start a new lab entry">New</button>
+      </div>
+
+      <div class="bd">
+        <div class="grid two">
+          <div>
+            <label>Case (Pick)</label>
+            <select id="caseSelect">
+              <option value="">Choose a case…</option>
+              <option>AI hiring bias</option>
+              <option>Climate responsibility</option>
+              <option>War & civilian harm</option>
+              <option>Food insecurity & conflict</option>
+              <option>Modern slavery / labor ethics</option>
+              <option>Girls’ education & human rights</option>
+            </select>
+          </div>
+          <div>
+            <label>Central Moral Question (Root)</label>
+            <input id="question" placeholder="Example: Is X ever justified if it harms Y?" />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="grid two">
+          <div>
+            <label>Primary Framework (Choose)</label>
+            <select id="framework">
+              <option value="">Choose framework…</option>
+              <option>Utilitarianism</option>
+              <option>Deontology (Kant)</option>
+              <option>Virtue Ethics</option>
+              <option>Care Ethics</option>
+              <option>Justice (Rawls)</option>
+              <option>Comparative (Eastern / Indigenous)</option>
+            </select>
+          </div>
+          <div>
+            <label>Counter Framework (Counter)</label>
+            <select id="counter">
+              <option value="">Optional…</option>
+              <option>Utilitarianism</option>
+              <option>Deontology (Kant)</option>
+              <option>Virtue Ethics</option>
+              <option>Care Ethics</option>
+              <option>Justice (Rawls)</option>
+              <option>Comparative (Eastern / Indigenous)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="grid">
+          <div>
+            <label>Watch/Read Notes (3 lines)</label>
+            <textarea id="watch"
+              placeholder="1) Two key claims from a source…&#10;2) One important concept/vocabulary…&#10;3) One question you still have…"></textarea>
+            <div class="small">This makes your tree “greener” (evidence-based reasoning).</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="grid">
+          <div>
+            <label>Apply the Primary Framework (Leaves)</label>
+            <textarea id="apply" placeholder="Principle → application to case → what action/policy follows?"></textarea>
+          </div>
+          <div>
+            <label>Strongest Counterargument (Counter-Branch)</label>
+            <textarea id="counterText" placeholder="What is the strongest objection or alternative ethical judgment?"></textarea>
+          </div>
+          <div>
+            <label>Revision / Reflection (Crown)</label>
+            <textarea id="revise" placeholder="What changed (or didn’t), and why? What is your revised position?"></textarea>
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button class="primary" id="saveBtn">Save</button>
+          <button id="exportBtn">Export Lab Report</button>
+          <button class="danger" id="resetBtn">Reset</button>
+        </div>
+
+        <p class="hint" id="pwaHint">Install tip: open in Chrome → ⋮ → “Install app” (or “Add to Home Screen”).</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast">Saved ✓</div>
+
+  <script>
+    // PWA service worker
+    const statusChip = document.getElementById('statusChip');
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          await navigator.serviceWorker.register('./sw.js');
+          statusChip.textContent = 'Offline ready ✓';
+        } catch (e) {
+          statusChip.textContent = 'Offline not ready';
+        }
+      });
+    }
+
+    const KEY = 'ethicsTreeLab_v1';
+
+    const el = (id) => document.getElementById(id);
+
+    const inputs = {
+      caseSelect: el('caseSelect'),
+      question: el('question'),
+      framework: el('framework'),
+      counter: el('counter'),
+      watch: el('watch'),
+      apply: el('apply'),
+      counterText: el('counterText'),
+      revise: el('revise')
+    };
+
+    const toast = el('toast');
+    const scorePill = el('scorePill');
+
+    const dots = [el('dot1'), el('dot2'), el('dot3'), el('dot4'), el('dot5'), el('dot6')];
+
+    function showToast(msg='Saved ✓'){
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(()=> toast.style.display = 'none', 950);
+    }
+
+    function loadState(){
+      try{
+        const s = JSON.parse(localStorage.getItem(KEY));
+        if (!s) return;
+        inputs.caseSelect.value = s.case || '';
+        inputs.question.value = s.question || '';
+        inputs.framework.value = s.framework || '';
+        inputs.counter.value = s.counter || '';
+        inputs.watch.value = s.watch || '';
+        inputs.apply.value = s.apply || '';
+        inputs.counterText.value = s.counterText || '';
+        inputs.revise.value = s.revise || '';
+      }catch{}
+    }
+
+    function getState(){
+      return {
+        case: inputs.caseSelect.value.trim(),
+        question: inputs.question.value.trim(),
+        framework: inputs.framework.value.trim(),
+        counter: inputs.counter.value.trim(),
+        watch: inputs.watch.value.trim(),
+        apply: inputs.apply.value.trim(),
+        counterText: inputs.counterText.value.trim(),
+        revise: inputs.revise.value.trim(),
       };
+    }
 
-      document.getElementById("clearBtn").onclick = () => {
-        localStorage.removeItem("items");
-        load();
-      };
+    function saveState(){
+      localStorage.setItem(KEY, JSON.stringify(getState()));
+      showToast();
+      statusChip.textContent = 'Saved locally ✓';
+      setTimeout(()=> statusChip.textContent = (statusChip.textContent.includes('Offline')?'Offline ready ✓':'Saving locally'), 900);
+    }
 
-      load();
+    // Tree drawing
+    const rootsG = document.getElementById('roots');
+    const branchesG = document.getElementById('branches');
+    const leavesG = document.getElementById('leaves');
+    const labelsG = document.getElementById('labels');
+    const legendTitle = document.getElementById('legendTitle');
+    const legendText = document.getElementById('legendText');
 
-      // Register Service Worker (needed for install + offline)
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", async () => {
-          try {
-            await navigator.serviceWorker.register("./sw.js");
-            status.textContent = "Service Worker: registered ✅ (offline ready after first load)";
-          } catch (e) {
-            status.textContent = "Service Worker registration failed ❌";
-          }
-        });
+    function clearTree(){
+      rootsG.innerHTML = '';
+      branchesG.innerHTML = '';
+      leavesG.innerHTML = '';
+      labelsG.innerHTML = '';
+    }
+
+    function pct(n){ return Math.max(0, Math.min(100, Math.round(n))); }
+
+    function updateStages(s){
+      const hasPick = !!(s.case || s.question);
+      const hasChoose = !!(s.framework);
+      const hasWatch = !!(s.watch);
+      const hasApply = !!(s.apply);
+      const hasCounter = !!(s.counterText || s.counter);
+      const hasRevise = !!(s.revise);
+
+      const arr = [hasPick, hasChoose, hasWatch, hasApply, hasCounter, hasRevise];
+      arr.forEach((on,i)=> dots[i].classList.toggle('on', !!on));
+
+      // growth score
+      const total = arr.filter(Boolean).length;
+      const extra = (s.question ? 1:0) + (s.apply.length>120 ? 1:0) + (s.revise.length>120 ? 1:0);
+      const score = pct(((total/6)*80) + (extra*7));
+      scorePill.textContent = `Growth: ${score}%`;
+      return {hasPick,hasChoose,hasWatch,hasApply,hasCounter,hasRevise,score};
+    }
+
+    function addPath(g, d, stroke, w){
+      const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+      p.setAttribute('d', d);
+      p.setAttribute('stroke', stroke);
+      p.setAttribute('stroke-width', w);
+      p.setAttribute('fill','none');
+      p.setAttribute('stroke-linecap','round');
+      g.appendChild(p);
+    }
+
+    function addLeaf(x,y,r=10){
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx', x);
+      c.setAttribute('cy', y);
+      c.setAttribute('r', r);
+      leavesG.appendChild(c);
+    }
+
+    function addLabel(text,x,y,size=16,opacity=0.9){
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.textContent = text;
+      t.setAttribute('x', x);
+      t.setAttribute('y', y);
+      t.setAttribute('font-size', size);
+      t.setAttribute('fill', `rgba(255,255,255,${opacity})`);
+      labelsG.appendChild(t);
+    }
+
+    function drawTree(){
+      const s = getState();
+      clearTree();
+
+      const meta = updateStages(s);
+
+      // Roots appear when question exists
+      if (s.question){
+        addPath(rootsG, "M500 535 C 470 560, 430 565, 390 585", "rgba(124,255,178,.55)", 5);
+        addPath(rootsG, "M500 535 C 530 562, 570 570, 615 590", "rgba(124,255,178,.45)", 4);
+        addPath(rootsG, "M500 535 C 505 565, 500 590, 500 610", "rgba(124,255,178,.35)", 3);
+
+        addLabel("Root question:", 70, 85, 14, 0.75);
+        addLabel(s.question.length>70 ? s.question.slice(0,70)+"…" : s.question, 70, 110, 18, 0.9);
       } else {
-        status.textContent = "Service Worker not supported in this browser.";
+        addLabel("Start by writing your moral question → roots will appear.", 70, 110, 16, 0.75);
       }
-    </script>
-  </body>
-</html>
 
+      // Primary framework branch
+      if (s.framework){
+        const right = "M500 340 C 600 300, 700 250, 820 210";
+        addPath(branchesG, right, "rgba(138,180,255,.75)", 10);
+        addLabel(s.framework, 680, 240, 18, 0.92);
+
+        // Leaves grow with apply length + watch notes
+        const leafCount = Math.min(18, Math.max(3, Math.floor(s.apply.length/40) + Math.floor(s.watch.length/60)));
+        for (let i=0;i<leafCount;i++){
+          const x = 610 + i*18 + (i%3)*6;
+          const y = 305 - i*6 + (i%4)*10;
+          addLeaf(x,y, 8 + (i%3));
+        }
+      } else {
+        addLabel("Choose a primary framework → your first branch grows.", 70, 150, 14, 0.75);
+      }
+
+      // Counter branch
+      if (s.counter || s.counterText){
+        const left = "M500 355 C 420 315, 330 270, 210 225";
+        addPath(branchesG, left, "rgba(255,210,124,.70)", 9);
+        addLabel(s.counter ? s.counter : "Counter", 190, 250, 16, 0.9);
+
+        const leafCount2 = Math.min(12, Math.max(2, Math.floor(s.counterText.length/55)));
+        for (let i=0;i<leafCount2;i++){
+          const x = 390 - i*18 - (i%3)*6;
+          const y = 318 - i*6 + (i%4)*9;
+          addLeaf(x,y, 7 + (i%2));
+        }
+      }
+
+      // Crown glow when revise exists
+      if (s.revise){
+        for (let i=0;i<10;i++){
+          addLeaf(500 + (Math.sin(i)*55), 170 + (Math.cos(i)*35), 9);
+        }
+        addLabel("Revision strengthens the crown.", 70, 185, 14, 0.7);
+      }
+
+      // Legend text
+      legendTitle.textContent = s.case ? `Case: ${s.case}` : "Lab prompt";
+      if (!s.case && !s.question) {
+        legendText.textContent = "Pick a case and write a moral question to grow roots.";
+      } else if (s.case && !s.framework) {
+        legendText.textContent = "Now choose a primary framework to grow your first branch.";
+      } else if (s.framework && !s.apply) {
+        legendText.textContent = "Write your application to create leaves (clear reasoning).";
+      } else if (s.apply && !s.counterText) {
+        legendText.textContent = "Add a counterargument to show intellectual tension (left branch).";
+      } else if (s.counterText && !s.revise) {
+        legendText.textContent = "Finish with revision/reflection to strengthen the crown.";
+      } else {
+        legendText.textContent = "Great. Export a clean Lab Report when ready.";
+      }
+    }
+
+    // Export (simple text report)
+    function exportReport(){
+      const s = getState();
+      const report =
+`APPLIED ETHICS LAB — TREE REPORT
+
+Case:
+${s.case || "(not selected)"}
+
+Central Moral Question:
+${s.question || "(not entered)"}
+
+Primary Framework:
+${s.framework || "(not selected)"}
+
+Watch/Read Notes:
+${s.watch || "(none)"}
+
+Application (Primary Framework):
+${s.apply || "(none)"}
+
+Counter Framework:
+${s.counter || "(none)"}
+
+Counterargument:
+${s.counterText || "(none)"}
+
+Revision / Reflection:
+${s.revise || "(none)"}\n`;
+
+      const blob = new Blob([report], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ethics-lab-report.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Exported ✓");
+    }
+
+    // Wire up events
+    Object.values(inputs).forEach(node => node.addEventListener('input', () => { drawTree(); saveState(); }));
+    el('saveBtn').addEventListener('click', () => { saveState(); drawTree(); });
+    el('exportBtn').addEventListener('click', exportReport);
+
+    el('resetBtn').addEventListener('click', () => {
+      if (!confirm("Reset this lab entry? (This clears saved data on this device)")) return;
+      localStorage.removeItem(KEY);
+      Object.values(inputs).forEach(n => n.value = '');
+      showToast("Reset ✓");
+      drawTree();
+    });
+
+    el('newBtn').addEventListener('click', () => {
+      if (!confirm("Start a new lab entry? (Clears current fields)")) return;
+      Object.values(inputs).forEach(n => n.value = '');
+      saveState();
+      drawTree();
+    });
+
+    // init
+    loadState();
+    drawTree();
+  </script>
+</body>
+</html>
