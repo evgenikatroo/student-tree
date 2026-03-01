@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My PWA</title>
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#111827" />
+
+    <!-- iOS niceties (iPhone install via “Add to Home Screen”) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 24px; background: #f6f7fb; }
+      .card { max-width: 720px; margin: 0 auto; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+      button { padding: 10px 14px; border-radius: 10px; border: 0; cursor: pointer; }
+      .primary { background: #111827; color: white; }
+      .muted { color: #6b7280; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+      input { padding: 10px 12px; border-radius: 10px; border: 1px solid #e5e7eb; min-width: 220px; }
+      ul { padding-left: 18px; }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <h1>My Installable Web App ✅</h1>
+      <p class="muted">
+        This is a PWA: it can install to your home screen and work offline after first load.
+      </p>
+
+      <div class="row">
+        <input id="itemInput" placeholder="Add a note..." />
+        <button class="primary" id="addBtn">Add</button>
+        <button id="clearBtn">Clear</button>
+      </div>
+
+      <h3>Notes</h3>
+      <ul id="list"></ul>
+
+      <p class="muted" id="status"></p>
+    </div>
+
+    <script>
+      // Basic local storage demo
+      const input = document.getElementById("itemInput");
+      const list = document.getElementById("list");
+      const status = document.getElementById("status");
+
+      function load() {
+        const items = JSON.parse(localStorage.getItem("items") || "[]");
+        list.innerHTML = "";
+        items.forEach((t, i) => {
+          const li = document.createElement("li");
+          li.textContent = t;
+          li.style.cursor = "pointer";
+          li.title = "Click to delete";
+          li.onclick = () => {
+            items.splice(i, 1);
+            localStorage.setItem("items", JSON.stringify(items));
+            load();
+          };
+          list.appendChild(li);
+        });
+      }
+
+      document.getElementById("addBtn").onclick = () => {
+        const text = input.value.trim();
+        if (!text) return;
+        const items = JSON.parse(localStorage.getItem("items") || "[]");
+        items.push(text);
+        localStorage.setItem("items", JSON.stringify(items));
+        input.value = "";
+        load();
+      };
+
+      document.getElementById("clearBtn").onclick = () => {
+        localStorage.removeItem("items");
+        load();
+      };
+
+      load();
+
+      // Register Service Worker (needed for install + offline)
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", async () => {
+          try {
+            await navigator.serviceWorker.register("/sw.js");
+            status.textContent = "Service Worker: registered ✅ (offline ready after first load)";
+          } catch (e) {
+            status.textContent = "Service Worker registration failed ❌";
+          }
+        });
+      } else {
+        status.textContent = "Service Worker not supported in this browser.";
+      }
+    </script>
+  </body>
+</html>
